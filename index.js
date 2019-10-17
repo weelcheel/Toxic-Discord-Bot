@@ -23,26 +23,26 @@ bot.on('message', message => {
         let player = null;
         try {
             player = Youtube(url);
+
+            if (player) {
+                let voiceChannel = message.member.voiceChannel;
+                voiceChannel.join().then(connection => {
+                    let decoder = Decoder();
+                    player.pipe(decoder);
+    
+                    connection.playConvertedStream(decoder);
+                    currentConnection = connection;
+                });
+            }
         }
         catch (exception) {
             console.log(exception);
             message.channel.send('Unable to play this video.');
             return;
         }
-
-        if (player) {
-            let voiceChannel = message.member.voiceChannel;
-            voiceChannel.join().then(connection => {
-                let decoder = Decoder();
-                player.pipe(decoder);
-
-                connection.playConvertedStream(decoder);
-                currentConnection = connection;
-            });
-        }
     }
 
-    if (message.content.toLowerCase() === '!stop' && currentConnection) {
+    if (message.content.toLowerCase() === '!stop' && currentConnection &&  currentConnection.dispatcher) {
         currentConnection.dispatcher.end();
     }
 });
