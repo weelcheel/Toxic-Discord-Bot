@@ -10,6 +10,7 @@ const {
 const bot = new Discord.Client();
 
 let currentConnection = null;
+let currentVoiceChannel = null;
 
 bot.on('ready', () => {
     console.log('hello');
@@ -32,6 +33,7 @@ bot.on('message', message => {
     
                     connection.playConvertedStream(decoder);
                     currentConnection = connection;
+                    currentVoiceChannel = voiceChannel;
                 });
             }
         }
@@ -44,6 +46,13 @@ bot.on('message', message => {
 
     if (message.content.toLowerCase() === '!stop' && currentConnection &&  currentConnection.dispatcher) {
         currentConnection.dispatcher.end();
+        if (currentVoiceChannel) {
+            currentVoiceChannel.leave();
+        }
+    }
+
+    if (message.content.toLowerCase() === 'seth is') {
+        message.channel.send('malding');
     }
 });
 
